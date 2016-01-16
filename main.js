@@ -40,7 +40,11 @@ page.viewportSize = { width: size, height: size };
 page.open('http://labs.strava.com/heatmap/#15/' + lon + '/' + lat + '/gray/bike', function() {
   var bounds = page.evaluate(function() {
     $('#header, #controls, #sidebar').remove();
+
+    // Force redraw and recalculation of map bounds
     $(window).trigger('resize');
+    map.invalidateSize();
+
     var bounds = map.getBounds();
     return {east: bounds.getEast(),
             west: bounds.getWest(),
