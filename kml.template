@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://earth.google.com/kml/2.1">
+<Document>
+<name>Strava Heatmap</name>
+<LookAt><longitude><%= lon %></longitude><latitude><%= lat %></latitude><range>1000</range></LookAt>
+ <GroundOverlay>
+  <drawOrder>0</drawOrder>
+  <Icon>
+   <href>strava.png</href>
+  </Icon>
+  <LatLonBox>
+   <north><%= north %></north>
+   <west><%= west %></west>
+   <south><%= south %></south>
+   <east><%= east %></east>
+  <rotation>0</rotation>
+  </LatLonBox>
+ </GroundOverlay>
+</Document>
+</kml>
