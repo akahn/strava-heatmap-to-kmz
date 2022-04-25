@@ -9,17 +9,19 @@ Generate KMZ files from the [Strava Global Heatmap](http://labs.strava.com/heatm
 
 ## Usage
 
-`npm run start <lat,lon> <output_file>`
+`npm run start <lat> <lon> <sessionID>`
 
+sessionID can be found when logged into to a Strava session. It is the `_strava4_session` cookie.
 For example:
 
-`npm run start 42.32733,-72.70095 /Users/akahn/strava.kmz`
+`npm run start 42.32733,-72.70095 stravasessionid108`
 
 ## How it works
 
-The program loads the Strava Heatmap in a headless puppeteer browser and takes a snapshot of the page and saves the map bounds. It then constructs a KML file declaring an image overlay positioned using the map bounds loaded previously. It then zips up this KML file along with the snapshot image, creating a KMZ that can be used in Google Earth and other programs.
+The program loads the Strava Heatmap in a headless puppeteer browser and takes a snapshot of the page and saves the map bounds. It then constructs a KML file declaring an image overlay positioned using the map bounds loaded previously. It then zips up this KML file along with the snapshot image, creating a KMZ that can be used in Google Earth and other programs. KMZ files are saved in the same directory as the script, with the convention of `<lat>-<lon>heatmap.kmz`.
 
 ## TODO
 
 -   Use proper CLI option parsing
 -   Make map size configurable
+-   Allow for declared output path
