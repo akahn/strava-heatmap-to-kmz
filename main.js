@@ -1,64 +1,95 @@
-var page = require('webpage').create(),
-    system = require('system'),
-    fs = require('fs'),
-    zip = new require('node-zip')(),
-    _ = require('lodash-node');
+const puppeteer = require("puppeteer");
+const fs = require("fs/promises");
+const _ = require("lodash");
+const zip = new require("node-zip")();
 
-if (system.args.length != 3) {
-  console.warn("Must provide lat,lon and output directory arguments");
-  phantom.exit();
+const lon = Number.parseFloat(process.argv[2]);
+const lat = Number.parseFloat(process.argv[3]);
+const sessionID = process.argv[4];
+const cookieKey = "_strava4_session";
+
+if (!(lon && lat && sessionID)) {
+	console.log("Must include latitude, longitude and session-id");
+	console.log(
+		"Remember to use the '--' end of options flag to allow negative numbers"
+	);
+	process.exit(1);
 }
 
-var outputFile = system.args[system.args.length - 1],
-    center = system.args[system.args.length - 2];
+//create template file
+const createTemplate = async () => {
+	const templateData = await fs.readFile("kml.template", "utf8");
+	const kmlTemplate = _.template(templateData);
+	return kmlTemplate;
+};
 
-try {
-  fs.write(outputFile, '');
-}
-catch (e) {
-  console.warn('Cannot write to file ' + outputFile);
-  phantom.exit();
-}
+//execution
+(async () => {
+	const browser = await puppeteer.launch();
+	const page = await browser.newPage();
 
-if (center.split(',').length != 2) {
-  console.warn('Must supply lat,lon in the form of lat,lon')
-  phantom.exit();
-}
-else {
-  var latlon = center.split(','),
-      lat = latlon[0],
-      lon = latlon[1];
-}
+	//disable geolocation
+	const context = browser.defaultBrowserContext();
+	await context.overridePermissions(
+		`https://www.strava.com/heatmap#14.33/${lon}/${lat}/hot/ride`,
+		["geolocation"]
+	);
 
-var zoom = 15,
-    size = 1000,
-    east, west, north, south, bounds;
+	page.viewport({ width: 1000, height: 1000 });
+	await page.setCookie({
+		name: cookieKey,
+		value: sessionID,
+		domain: ".strava.com",
+	});
+	await page.goto(
+		`https://www.strava.com/heatmap#14.33/${lon}/${lat}/hot/ride`,
+		{ waitUntil: "networkidle2" }
+	);
 
-var kmlTemplate = _.template(fs.read('kml.template', 'utf8'));
+	const bounds = await page.evaluate(async () => {
+		const header = document.querySelector("#global-header");
+		const modal = document.querySelector("#learn-more-modal");
+		const zoomControls = document.querySelector("#controls");
+		const cookiesBanner = document.querySelector("#stravaCookieBanner");
+		const fadeLayer = document.querySelector(".modal-backdrop");
+		const sidebar = document.querySelector("#sidebar");
+		const input = document.querySelector(".mapboxgl-control-container");
+		fadeLayer.remove();
+		input.remove();
+		zoomControls.remove();
+		if (cookiesBanner) {
+			cookiesBanner.remove();
+		}
+		modal.remove();
+		header.remove();
+		sidebar.remove();
 
-page.viewportSize = { width: size, height: size };
-page.open('http://labs.strava.com/heatmap/#15/' + lon + '/' + lat + '/gray/bike', function() {
-  var bounds = page.evaluate(function() {
-    $('#header, #controls, #sidebar').remove();
+		const bounds = map.getBounds();
+		return {
+			east: bounds.getEast(),
+			west: bounds.getWest(),
+			north: bounds.getNorth(),
+			south: bounds.getSouth(),
+		};
+	});
 
-    // Force redraw and recalculation of map bounds
-    $(window).trigger('resize');
-    map.invalidateSize();
+	await page.screenshot({ path: "strava.png" });
+	await browser.close();
 
-    var bounds = map.getBounds();
-    return {east: bounds.getEast(),
-            west: bounds.getWest(),
-            north: bounds.getNorth(),
-            south: bounds.getSouth()};
-  });
+	const template = await createTemplate();
+	const kml = template(_.merge(bounds, { lat: lat, lon: lon }));
 
-  page.render('strava.png', {quality: 100});
-  var kml = kmlTemplate(_.merge(bounds, {lat: lat, lon: lon}));
-  zip.file('strava.png', fs.read('strava.png', {mode: 'rb'}), {binary: true});
-  zip.file('doc.kml', kml);
-  fs.write(outputFile, zip.generate({type: 'string', compression: 'DEFLATE'}), 'wb');
-  fs.remove('strava.png');
+	// compress and write
+	zip.file("strava.png", await fs.readFile("./strava.png"));
+	zip.file("doc.kml", kml);
+	const data = zip.generate({ base64: false, compression: "DEFLATE" });
 
-  phantom.exit()
-});
-
+	try {
+		await fs.writeFile("test.zip", data, "binary");
+		await fs.unlink("./strava.png");
+	} catch (e) {
+		console.error("Error when writing file");
+		console.error(e.message);
+		process.exit();
+	}
+})();

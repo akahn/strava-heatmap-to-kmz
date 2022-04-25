@@ -1,20 +1,18 @@
 {
-  "name": "strava-heatmap-to-kmz",
-  "version": "0.1.0",
-  "description": "Generate KMZ files from Strava Heatmap images",
-  "repository": "https://github.com/akahn/strava-heatmap-to-kmz",
-  "main": "main.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Alex Kahn",
-  "license": "ISC",
-  "scripts": {
-    "generate": "phantomjs main.js",
-    "debug": "phantomjs --debug=true main.js"
-  },
-  "dependencies": {
-    "node-zip": "1.1.1",
-    "lodash-node": "3.10.1"
-  }
+	"name": "strava-heatmap-to-kmz",
+	"version": "0.1.0",
+	"description": "Generate KMZ files from Strava Heatmap images",
+	"repository": "https://github.com/akahn/strava-heatmap-to-kmz",
+	"main": "main.js",
+	"author": "Alex Kahn",
+	"license": "ISC",
+	"scripts": {
+		"start": "node main.js",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"dependencies": {
+		"lodash": "^4.17.21",
+		"node-zip": "^1.0.1",
+		"puppeteer": "^13.6.0"
+	}
 }
