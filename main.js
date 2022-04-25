@@ -85,7 +85,7 @@ const createTemplate = async () => {
 	const data = zip.generate({ base64: false, compression: "DEFLATE" });
 
 	try {
-		await fs.writeFile("test.zip", data, "binary");
+		await fs.writeFile(`${lat}-${lon}heatmap.kmz`, data, "binary");
 		await fs.unlink("./strava.png");
 	} catch (e) {
 		console.error("Error when writing file");
