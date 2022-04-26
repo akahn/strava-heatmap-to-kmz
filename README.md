@@ -9,12 +9,13 @@ Generate KMZ files from the [Strava Global Heatmap](http://labs.strava.com/heatm
 
 ## Usage
 
-`npm run start <lat> <lon> <sessionID>`
+`npm run start -- <lat> <lon> <sessionID>`
 
-sessionID can be found when logged into to a Strava session. It is the `_strava4_session` cookie.
+The `--` end of options flag is important, because it allows for negative numbers in coordinates.
+`sessionID` can be found when logged into to a Strava session. It is the `_strava4_session` cookie.
 For example:
 
-`npm run start 42.32733,-72.70095 stravasessionid108`
+`npm run start -- 42.32733,-72.70095 stravasessionid108`
 
 ## How it works
 
