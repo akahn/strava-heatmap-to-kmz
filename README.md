@@ -9,13 +9,22 @@ Generate KMZ files from the [Strava Global Heatmap](http://labs.strava.com/heatm
 
 ## Usage
 
-`npm run start -- <lat> <lon> <sessionID>`
+`npm run start -- <lat> <lon> <sessionID> [colorFlag]`
 
 The `--` end of options flag is important, because it allows for negative numbers in coordinates.
 `sessionID` can be found when logged into to a Strava session. It is the `_strava4_session` cookie.
 For example:
 
 `npm run start -- 42.32733,-72.70095 stravasessionid108`
+
+`colorFlag` sets the color of the heatmap trace. If none is provided, defaults to 'gray'
+|optional flag|result|
+|---|-------|
+| h | "hot" |
+| r | "red" |
+| b | "blue" |
+| g | "gray" |
+| p | "purple" |
 
 ## How it works
 
