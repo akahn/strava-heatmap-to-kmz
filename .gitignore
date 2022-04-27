@@ -1,5 +1,5 @@
-#zip files
-*.zip
+#kmz files
+*.kmz
 # Logs
 npm-debug.log*
 # Optional npm cache directory
