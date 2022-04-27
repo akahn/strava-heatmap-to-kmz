@@ -2,6 +2,8 @@
 
 Generate KMZ files from the [Strava Global Heatmap](http://labs.strava.com/heatmap/). This allows you to use the heatmap as a map layer (currently 1000×1000 pixels) on a mobile device (e.g. iPhone or Garmin), which enables offline use and helps you to locate where the hell you are in the woods.
 
+<img src="docs/images/kt-hm.png" width="300" alt="Heatmap overlay on Google Earth">
+
 ## Dependencies
 
 -   Node.js
