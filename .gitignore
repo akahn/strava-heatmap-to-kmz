@@ -1,0 +1,8 @@
+#kmz files
+*.kmz
+# Logs
+npm-debug.log*
+# Optional npm cache directory
+.npm
+#
+node_modules/
