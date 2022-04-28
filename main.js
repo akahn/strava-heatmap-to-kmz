@@ -46,7 +46,7 @@ const createTemplate = async () => {
 };
 
 //execution
-const reqUrl = `https://www.strava.com/heatmap#14.33/${lon}/${lat}/${colorString}/ride`;
+const reqUrl = `https://www.strava.com/heatmap#15/${lon}/${lat}/${colorString}/ride`;
 
 (async () => {
 	const browser = await puppeteer.launch();
@@ -81,6 +81,9 @@ const reqUrl = `https://www.strava.com/heatmap#14.33/${lon}/${lat}/${colorString
 		modal.remove();
 		header.remove();
 		sidebar.remove();
+
+		// force redraw
+		window.dispatchEvent(new Event("resize"));
 
 		const bounds = map.getBounds();
 		return {
